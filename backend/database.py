@@ -1,17 +1,12 @@
-from sqlmodel import SQLModel, create_engine
-from dotenv import load_dotenv
-import os
-from models import Item  # Import models here
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
-# Load environment variables
-load_dotenv()
+URL_DATA = 'postgresql://Andrew_login:Cooldue2@localhost:5432/hackathon_db'
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(URL_DATA)
 
-# Create the engine
-engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Function to initialize the database
-def init_db():
-    SQLModel.metadata.create_all(engine)  # Creates tables based on imported models
-    print("Database and tables created!")
+Base = declarative_base()

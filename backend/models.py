@@ -1,9 +1,13 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from database import Base
 
-class Item(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    description: Optional[str] = None
-    price: float
-    is_available: bool = True
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    status = Column(String, index=True)
+    avg_ppg = Column(Float, index=True)
+    heart_rate_var = Column(Float, index=True)
+    bpm = Column(Integer, index=True)
+
