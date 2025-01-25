@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    font-family: "Fira Sans", serif;
+    background-color: rgb(250 250 249 / var(--tw-bg-opacity, 1));
+}

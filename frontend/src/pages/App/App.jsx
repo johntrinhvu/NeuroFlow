@@ -1,7 +1,16 @@
+import { Routes, Route } from "react-router"
+import Navbar from "../../components/Navbar/Navbar";
+import HomePage from "../HomePage/HomePage";
+
 export default function App() {
   return (
-    <div>
-      <h1 className="font-bold text-3xl">Hello World</h1>
+    <>
+    <Navbar />
+    <div style={{ marginTop: '84px' }}>
+      <Routes>
+        <Route path="/" element={<HomePage />}></Route>
+      </Routes>
     </div>
+    </>
   );
 }
