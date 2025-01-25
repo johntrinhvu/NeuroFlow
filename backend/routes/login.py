@@ -47,7 +47,6 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-# --- User Routes ---
 @router.post("/users/register")
 def register_user(user: RegisterUser, db: db_dependency):
     user_found = db.query(models.User).filter(models.User.username == user.username).first()
