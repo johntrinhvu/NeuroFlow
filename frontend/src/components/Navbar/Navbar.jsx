@@ -30,27 +30,27 @@ export default function Navbar() {
                             <FaBars size={20} />
                         </button>
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
-                                <Link to="/signin" className="block px-4 py-2 text-slate-800">Sign In</Link>
-                                <Link to="/try" className="block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
+                            <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
+                                <Link to="/signin" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+                                <Link to="/try" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                             </div>
                         )}
                     </div>
                     <div className="hidden md:flex gap-4">
                         <Link to="/try">
-                            <button className="transition ease-in-out hover:bg-violet-500 bg-violet-600 border border-violet-900 rounded-lg text-white px-4 tracking-wide py-0.5">
+                            <button className="transition ease-in-out hover:bg-violet-700 bg-violet-600 border border-violet-900 rounded-lg text-white px-4 tracking-wide py-0.5">
                                 Try it!
                             </button>
                         </Link>
                         <div className="flex border rounded-lg text-slate-800 border-violet-200">
-                            <Link to="/signin" className="px-4 py-0.5">
+                            <Link to="/authenticate" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
                                 <button>
                                     Sign In
                                 </button>
                             </Link>
                             <span className="border border-violet-200">
                             </span>
-                            <Link to="/signup" className="px-4 py-0.5">
+                            <Link to="/authenticate" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
                                 <button>
                                     Sign Up
                                 </button>
