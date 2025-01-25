@@ -1,0 +1,102 @@
+.title-wrapper {
+    padding: 40px 40px 24px;
+    box-sizing: content-box;
+}
+
+.title {
+    font-size: 32px;
+    margin: 24px 0 0;
+    color: rgb(30 41 59 / var(--tw-bg-opacity, 1));
+    width: 320px;
+    text-align: center;
+}
+
+.login-container {
+    padding: 0 40px 40px;
+    border-radius: 3px;
+    box-shadow: none;
+    width: 320px;
+    box-sizing: content-box;
+    flex-shrink: 0;
+}
+
+.continue-btn {
+    position: relative;
+    height: 52px;
+    width: 320px;
+    background-color: rgb(59 7 100 / var(--tw-bg-opacity, 1));
+    color: #fff;
+    margin: 24px 0 0;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    border-radius: 6px;
+    padding: 4px 16px;
+    border-width: 0px;
+}
+
+button {
+    appearance: auto;
+    text-rendering: auto;
+    word-spacing: auto;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding-block: 1px;
+    padding-inline: 6px;
+    border-style: outset;
+    border-color: buttonborder;
+    border-image: initial;
+}
+
+.input-wrapper {
+    position: relative;
+    margin-bottom: 25px;
+    width: 320px;
+    box-sizing: content-box;
+}
+
+form {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+.login-input-box {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #c2c8d0;
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: #2d333a;
+    font-family: inherit;
+    font-size: 16px;
+    height: 52px;
+    line-height: 1.1;
+    outline: none;
+    padding-block: 1px;
+    padding-inline: 2px;
+    padding: 0 16px;
+    transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+    width: 100%;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0 0 15px;
+}
+
+.error-message {
+    color: red;
+    margin-top: -50px;
+    font-weight: 400;
+    font-size: 14px;
+}
