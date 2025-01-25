@@ -40,9 +40,15 @@ def select_csv(annotation_time_score, first_csv_path, second_csv_path):
             csv_to_times[first_csv_path].append(hour)
         elif date == "2000-01-02":
             csv_to_times[second_csv_path].append(hour)
-    for key, value in csv_to_times.items():
-        print(key, value)
     return csv_to_times
+
+# Given a time array and ppg array, returns (time, peaks) data. Not sure what this will return yet.
+def obtain_peaks(time, ppg):
+    peaksDict = defaultdict(list) # {time: [], ppg: []}
+    smoothed_data = gaussian_filter1d(ppg, sigma=2)
+    # Peaks holds indices of...peaks
+    peaks, properties = find_peaks(smoothed_data, height=350, prominence=50)
+    # TODO: Figure out what this should return.
 
 # Function should grab x amount of samples, starting at each of the given times (or closest). 
 # Pass in csv_to_times = {csvpath: [times]}
@@ -53,14 +59,12 @@ def grab_n_samples(num_samples, csv_to_times, time_sss):
     for key, value in csv_to_times.items():
         path = key
         ppg_df = extract_csv_data_pandas(path)
-        print(len(ppg_df))
         # For each annotation reading
         for annotation_time in value:
             annotation_time = datetime.datetime.strptime(annotation_time, "%H:%M:%S.%f").time()
             valid_idx_start = 0
             valid_idx_end = 0
             # For each line in the csv file
-            # // Why is i starting at 32k...
             for i in range(len(ppg_df)):
                 time = ppg_df.iloc[i, 0]
                 ppg_val = ppg_df.iloc[i, 1]
@@ -87,25 +91,39 @@ def grab_n_samples(num_samples, csv_to_times, time_sss):
                 csv_data["time"].append(time)
                 csv_data["ppg"].append(ppg_val)
                 csv_data["score"].append(score)
-                print("adding" + time + " " + str(ppg_val))
-    print(csv_data)
+                # print("adding" + time + " " + str(ppg_val))
 
+            # # Contains n samples from the annotation time.
+            # time = []
+            # ppg = []
+            # for idx in range(valid_idx_start, valid_idx_end):
+            #     time.append(ppg_df.iloc[idx, 0])
+            #     ppg.append(ppg_df.iloc[idx, 1])
+            # obtain_peaks(time, ppg)
+            # # Map the score to every single entry
 
-# with open("output.csv", "w", newline="") as file:
-#     writer = csv.DictWriter(file, fieldnames=["Name", "Age", "City"])
-#     writer.writeheader()
-#     writer.writerows(data)
+    rows = [
+        {"time": time, "ppg": ppg, "score": score}
+        for time, ppg, score in zip(csv_data["time"], csv_data["ppg"], csv_data["score"])
+    ]
+
+    with open("test1234.csv", "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=["time", "ppg", "score"])
+        writer.writeheader()
+        writer.writerows(rows)
+
                     
-                    
 
 
 
 
 
-annotation_path = "C:\MSWE\Wakefulness\data\gamer1-annotations.csv"
+annotation_path = "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-annotations.csv"
 
 annotation_time_score = obtain_annotation_times(annotation_path)
-csv_to_times = select_csv(annotation_time_score, "C:\MSWE\Wakefulness\data\gamer1-ppg-2000-01-01.csv", "C:\MSWE\Wakefulness\data\gamer1-ppg-2000-01-02.csv")
+csv_to_times = select_csv(annotation_time_score, 
+                          "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-01.csv", 
+                          "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-02.csv")
 grab_n_samples(100, csv_to_times, annotation_time_score)
 # Prints out peaks 
 # file_path = 'C:\MSWE\Wakefulness\ppg_sample.csv'
