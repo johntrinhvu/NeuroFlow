@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File
+from routes import homepage_router, try_page_router
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert
 from pydantic import BaseModel
 from typing import List, Annotated
 from datetime import datetime
-
+import os
+import uuid
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -44,3 +46,6 @@ async def create_user(user: UserBase, db:db_dependency):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+
+app.include_router(homepage_router)
+app.include_router(try_page_router)
