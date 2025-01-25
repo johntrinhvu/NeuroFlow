@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import '../AuthPage/AuthPage.css';
 import SignUpForm from '../../components/SignUpForm/SignUpForm';
 import SignInForm from '../../components/SignInForm/SignInForm';
@@ -6,6 +7,13 @@ import Logo from '../../assets/logo.png';
 
 export default function AuthPage({ setUser }) {
   const [showSignUp, setShowSignUp] = useState(false);
+  const location = useLocation();
+  
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const formType = queryParams.get('form');
+    setShowSignUp(formType === 'signup');
+  }, [location.search]);
 
   return (
     <div className="page-wrapper">
