@@ -161,7 +161,7 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
     }
 
 @router.post("/users/logout")
-def logout_user(db: Session = Depends(get_db)):
+def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     global active_sessions
 
     if len(active_sessions) >= 1:

@@ -6,9 +6,9 @@ export default function HomePage() {
     return (
         <div>
             <div className="flex flex-col justify-center items-center h-[100vh] bg-custom-purple-gradient">
-            <h1 className="text-gray-100 text-6xl font-bold text-center relative">
+            <h1 className="text-gray-100 text-6xl font-bold text-center">
                 Try NeuroFlow for free{' '}
-                <span className="absolute inset-0 bg-white opacity-20 blur-md transform translate-y-1"></span>
+                <span className="inset-0 bg-white opacity-20 blur-md transform translate-y-1"></span>
             </h1>
                 <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data in your pocket</h2>
                 <button className="bg-black border border-gray-500 w-[100px] text-white rounded-md px-4 py-2">Try It!</button>

@@ -5,6 +5,7 @@ from scipy.ndimage import gaussian_filter1d
 from collections import defaultdict
 import datetime
 import csv
+import neurokit2 as nk
 
 def extract_csv_data_pandas(file_path):
     df = pd.read_csv(file_path)
@@ -107,7 +108,7 @@ def grab_n_samples(num_samples, csv_to_times, time_sss):
         for time, ppg, score in zip(csv_data["time"], csv_data["ppg"], csv_data["score"])
     ]
 
-    with open("test1234.csv", "w", newline="") as file:
+    with open("output.csv", "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["time", "ppg", "score"])
         writer.writeheader()
         writer.writerows(rows)
@@ -118,13 +119,16 @@ def grab_n_samples(num_samples, csv_to_times, time_sss):
 
 
 
-annotation_path = "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-annotations.csv"
+annotation_path = "C:\hackathon-uci\ml_model\Wakefulness\data\gamer1-annotations.csv"
 
 annotation_time_score = obtain_annotation_times(annotation_path)
 csv_to_times = select_csv(annotation_time_score, 
-                          "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-01.csv", 
-                          "D:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-02.csv")
-grab_n_samples(100, csv_to_times, annotation_time_score)
+                          "C:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-01.csv", 
+                          "C:\hackathon-uci\ml_model\Wakefulness\data\gamer1-ppg-2000-01-02.csv")
+grab_n_samples(300, csv_to_times, annotation_time_score)
+
+
+
 # Prints out peaks 
 # file_path = 'C:\MSWE\Wakefulness\ppg_sample.csv'
 

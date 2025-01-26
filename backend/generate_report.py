@@ -1,27 +1,3 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, APIRouter
-from fastapi.responses import FileResponse
-from reportlab.pdfgen import canvas
-from models import HRData
-import os
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
-from pydantic import BaseModel
-from typing import List
-from datetime import datetime
-import jwt
-import os
-import uuid
-from models import HRData, User  # Import your HRData model and Base from models
-from database import SessionLocal  # Replace with your synchronous session'
-from fastapi.security import OAuth2PasswordBearer
-from routes.login import active_sessions
-import json
-import cv2
-import numpy as np
-from scipy.signal import butter, convolve, find_peaks, filtfilt
-from fastapi import FastAPI, Query
-import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
-
 from hrv_data import hrv_data
 from scipy.stats import norm
 import matplotlib.pyplot as plt
@@ -37,18 +13,6 @@ import math
 
 pdfmetrics.registerFont(TTFont('Times-Roman', 'times.ttf'))
 
-
-from dotenv import load_dotenv
-router = APIRouter()
-app = FastAPI()
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-
 def calculate_percentile(sex, measurement_type, measurement):
     # sex = "male" or "female"
     # Measurement type = "SDNN", "RMSSD", "pNN50", "BPM"
@@ -63,6 +27,29 @@ def calculate_percentile(sex, measurement_type, measurement):
     percentile = norm.cdf(z_score) * 100
     print(percentile)
     return round(percentile, 2)
+
+# Accepts a list of HRData objects whose attributes can be accessed with "."
+
+list_of_hdr = []
+if len(list_of_hdr) > 0:
+    most_recent_hdr = list_of_hdr[-1]
+
+date_to_stress_score = {} # To be plot. Date should be in date/hours/mins
+for hdr in list_of_hdr:
+    # Looks like this: "2025-01-26T01:13:28.660651"
+    # Assuming timestamp is a datetime object. May need to change.
+    timestamp = hdr.uploaded_at
+    formatted_datetime = str(timestamp.strftime("%Y-%m-%d %H:%M"))
+
+    date_to_stress_score[formatted_datetime] = hdr.Stress_Score
+
+test_result = {
+    "sdnn": most_recent_hdr.SDNN, 
+    "rmssd": most_recent_hdr.RMSSD, 
+    "pnn50": most_recent_hdr.pNN50, 
+    "bpm": most_recent_hdr.BPM, 
+    "stress_score": most_recent_hdr.Stress_Score
+}
 
 def generate_stress_report(
     full_name,
@@ -198,64 +185,8 @@ def generate_stress_report(
     # Return PDF as bytes
     return buffer.getvalue()
 
-def get_current_user(db: Session):
-    try:
-        payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload["user_id"]
-        if not user_id:
-            raise HTTPException(status_code=401, detail=payload)
-        user = db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=401, detail="token")
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-# Dependency for database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@router.get("/hrdata/download")
-def download_hr_data(db: Session = Depends(get_db)):
-    # Verify the current user
-    current_user = get_current_user(db)
-
-    # Query HRData for the current user
-    user_hr_data = db.query(HRData).filter(HRData.user_id == current_user.id).all()
-
-    if not user_hr_data:
-        raise HTTPException(status_code=404, detail="No HR data found for the user")
-
-    # Accepts a list of HRData objects whose attributes can be accessed with "."
-    most_recent_hdr = None
-    if len(user_hr_data) > 0:
-        most_recent_hdr = user_hr_data[-1]
-    if not most_recent_hdr:
-        raise HTTPException(status_code=404, detail="No HR data found for the user") 
-    
-    date_to_stress_score = {} # To be plot. Date should be in date/hours/mins
-    for hdr in user_hr_data:
-        # Looks like this: "2025-01-26T01:13:28.660651"
-        # Assuming timestamp is a datetime object. May need to change.
-        timestamp = hdr.uploaded_at
-        formatted_datetime = str(timestamp.strftime("%Y-%m-%d %H:%M"))
-
-        date_to_stress_score[formatted_datetime] = hdr.Stress_Score
-
-    test_result = {
-        "sdnn": most_recent_hdr.SDNN, 
-        "rmssd": most_recent_hdr.RMSSD, 
-        "pnn50": most_recent_hdr.pNN50, 
-        "bpm": most_recent_hdr.BPM, 
-        "stress_score": most_recent_hdr.Stress_Score
-    }
-
+# Example usage
+def example_usage():
     pdf_content = generate_stress_report(
         full_name='Dylan Tran',
         sex="male",
@@ -264,17 +195,9 @@ def download_hr_data(db: Session = Depends(get_db)):
         clinical_recommendations="Recommend stress management techniques and follow-up consultation."
     )
     
-    # Write the PDF file
-    file_path = "stress_report.pdf"
-    with open(file_path, "wb") as f:
+    # Write to file for demonstration
+    with open('stress_report.pdf', 'wb') as f:
         f.write(pdf_content)
 
-    # Return the file as a response
-    return FileResponse(
-        file_path,
-        media_type="application/pdf",
-        filename="stress_report.pdf"
-    )
-
-    
-app.include_router(router, prefix="/hrdata")
+# Uncomment to test
+example_usage()

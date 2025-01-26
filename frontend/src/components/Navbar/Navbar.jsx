@@ -56,8 +56,8 @@ export default function Navbar() {
     }, []);
 
     return (
-        <div className="flex justify-center">
-            <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between border-violet-400 bg-slate-50 border">
+        <div className="z-40 flex justify-center">
+            <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between border-violet-400 bg-violet-100 border">
                 <Link to="/" className="">
                     <div className="flex gap-0.5 items-center">
                         <span className="">
@@ -88,7 +88,7 @@ export default function Navbar() {
                     </div>
                     <div className="hidden md:flex gap-4">
                         <Link to="/try">
-                            <button className="transition ease-in-out hover:bg-violet-700 bg-violet-600 border border-violet-900 rounded-lg text-white px-4 tracking-wide py-0.5">
+                            <button className="transition ease-in-out hover:bg-purple-900 bg-purple-800 border border-violet-900 rounded-lg text-white px-4 tracking-wide py-0.5">
                                 Try it!
                             </button>
                         </Link>
