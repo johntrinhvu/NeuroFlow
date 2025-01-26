@@ -114,9 +114,9 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-@router.options("/users/login")
-def options_login():
-    return {"allow": "POST, OPTIONS"}
+# @router.options("/users/login")
+# def options_login():
+#     return {"allow": "POST, OPTIONS"}
 
 @router.post("/users/register")
 def register_user(user: RegisterUser, db: db_dependency):
@@ -162,15 +162,15 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
 
 @router.post("/users/logout")
 def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    db_user = get_current_user(token, db)
-    access_token = create_access_token({"user_id": db_user.id, "name": db_user.username})
+    # db_user = get_current_user(token, db)
+    # access_token = create_access_token({"user_id": db_user.id, "name": db_user.username})
     global active_sessions
 
-    # if len(active_sessions) >= 1:
-    #     active_sessions = []
-    #     return {"message": "Logged out successfully"}
-    if access_token in active_sessions:
-        del active_sessions[current_user.id]
+    if len(active_sessions) >= 1:
+        active_sessions = []
+        return {"message": "Logged out successfully"}
+    # if access_token in active_sessions:
+    #     del active_sessions[current_user.id]
     else:
         raise HTTPException(status_code=401, detail="No Login")
 
