@@ -208,7 +208,7 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
     new_hr_data = HRData(
         id=str(uuid.uuid4()),
         user_id=current_user.id,
-        # BPM=float(bpm_and_hrv["BPM"]),
+        BPM=float(bpm_and_hrv["BPM"]),
         SDNN=float(bpm_and_hrv["HRV"]["SDNN"]), 
         RMSSD=float(bpm_and_hrv["HRV"]["RMSSD"]),
         pNN50=float(bpm_and_hrv["HRV"]["pNN50"]),
@@ -221,15 +221,44 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
         "message": "Video processed successfully",
         "user_id": current_user.id,
         "report_id": new_hr_data.id,
-        "stress_indicator": bpm_and_hrv["Stress_Score"]
+        "BPM" : float(bpm_and_hrv["BPM"]),
+        "SDNN": float(bpm_and_hrv["HRV"]["SDNN"]),
+        "RMSSD" : float(bpm_and_hrv["HRV"]["RMSSD"]), 
+        "pNN50" : float(bpm_and_hrv["HRV"]["pNN50"]),
+        "stress_indicator": bpm_and_hrv["Stress_Score"],
     }
 
 # Endpoint: Retrieve HR Data
-@router.get("/hrdata/data")
-def get_hr_data(user_id: str = Depends(get_db), db: Session = Depends(get_db)):
-    result = db.execute(select(HRData).filter(HRData.user_id == user_id))
-    hr_records = result.scalars().all()
-    return {"hr_data": hr_records}
+@router.get("/hrdata/data/{user_id}/{report_id}")
+def get_hr_data(user_id: str, report_id: str, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # validate token
+    curr_user = get_current_user(token, db)
+    if curr_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Unauthorized Access")
+
+    # Fetch HR data
+    hr_record = db.query(HRData).filter(HRData.user_id == user_id, HRData.id == report_id).first()
+    if not hr_record:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    return {
+        "BPM": hr_record.BPM,
+        "SDNN": hr_record.SDNN,
+        "RMSSD": hr_record.RMSSD,
+        "pNN50": hr_record.pNN50,
+        "stress_indicator": hr_record.Stress_Score,
+    }
+
+@router.get("/hrdata/data/{user_id}")
+def get_all_hr_data(user_id: str, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # Validate the token and ensure the user matches
+    current_user = get_current_user(token, db)
+    if current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Unauthorized access")
+
+    # Fetch all HR data for the user
+    hr_records = db.query(HRData).filter(HRData.user_id == user_id).all()
+    return {"hr_data": [hr.to_dict() for hr in hr_records]}
 
 
 app.include_router(router, prefix="/hrdata")

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function TryPage() {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -46,7 +47,8 @@ export default function TryPage() {
             console.log("Upload successful:", data);
 
             // Assuming the backend returns userId and postId
-            const userId = "your_user_id_logic"; // Replace with actual logic to get userId
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.user_id; // Replace with actual logic to get userId
             const postId = data.report_id; // Replace with actual response from backend
 
             navigate(`/users/${userId}/${postId}`);
