@@ -1,6 +1,7 @@
 import nightBed from "../../assets/nightBed.jpg";
 import bloodCell from "../../assets/bloodCell.jpg";
 import xRay from "../../assets/xray.jpg";
+import EkgSvg from "../../components/EkgAnimations/EkgAnimations";
 import { Link } from "react-router-dom";
 
 export default function HomePage() {
@@ -8,14 +9,18 @@ export default function HomePage() {
         <div>
             <div className="flex flex-col justify-center items-center h-[100vh] bg-custom-purple-gradient">
             <h1 className="text-gray-100 text-6xl font-bold text-center">
-                Try NeuroFlow for Free{' '}
+                NeuroFlow{' '}
                 <span className="inset-0 bg-white opacity-20 blur-md transform translate-y-1"></span>
             </h1>
-                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data in your pocket</h2>
+                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Let's quantify stress.</h2>
                 <Link to="/try">
                     <button className="transition ease-in-out hover:bg-slate-950 bg-slate-800 border border-gray-500 text-white rounded-md px-4 py-2">Try NeuroFlow</button>
                 </Link>
                 {/* <p className="text-gray-100 text-center pt-4 text-shadow">Your journey to better health starts here!</p> */}
+                <div className=" w-full mt-5 pl-44">
+                    <EkgSvg/>
+                </div>
+                
             </div>
             <div>
                 <div className="h-24 flex justify-center bg-white items-center">
