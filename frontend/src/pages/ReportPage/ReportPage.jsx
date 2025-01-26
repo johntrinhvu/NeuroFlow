@@ -47,15 +47,25 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="mt-24 p-4 bg-purple-200">
-        <div>
-            <h1 className="text-2xl font-bold">Your Generated Report Details</h1>
-            <h2 className="text-xl font-bold">Stats</h2>
-            <p><strong>BPM:</strong> {reportData.BPM}</p>
-                <p><strong>SDNN:</strong> {reportData.SDNN}</p>
-                <p><strong>RMSSD:</strong> {reportData.RMSSD}</p>
-                <p><strong>pNN50:</strong> {reportData.pNN50}</p>
-                <p><strong>Stress Indicator:</strong> {reportData.stress_indicator}</p>
+    <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-200 h-screen">
+        <div className="mt-24 flex flex-col">
+            <h1 className="text-2xl sm:text-3xl font-bold flex justify-center">Generated Report Details</h1>
+            <div className="mt-4 flex justify-center space-x-8 items-center ">
+                <div className="text-right text-xl">
+                    <h3><strong>BPM: </strong></h3>
+                    <h3><strong>SDNN: </strong></h3>
+                    <h3><strong>RMSSD: </strong></h3>
+                    <h3><strong>pNN50: </strong></h3>
+                    <h3><strong>Stress Indicator: </strong></h3>
+                </div>
+                <div className="text-left text-xl">
+                    <h3>{reportData.BPM}</h3>
+                    <h3>{reportData.SDNN}</h3>
+                    <h3>{reportData.RMSSD}</h3>
+                    <h3>{reportData.pNN50}</h3>
+                    <h3>{reportData.stress_indicator}</h3>
+                </div>
+            </div>
         </div>
     </div>
   );
