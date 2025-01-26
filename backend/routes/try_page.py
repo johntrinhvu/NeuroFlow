@@ -126,7 +126,7 @@ def give_bpm_and_hrv(averaged, time_bw_fram):
         "Stress_Score": stress_score
     }
 
-def get_current_user(token:str, db: Session):
+def get_current_user(token: str, db: Session):
     try:
         payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload["user_id"]
@@ -208,7 +208,7 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
     new_hr_data = HRData(
         id=str(uuid.uuid4()),
         user_id=current_user.id,
-        BPM=float(bpm_and_hrv["BPM"]),
+        # BPM=float(bpm_and_hrv["BPM"]),
         SDNN=float(bpm_and_hrv["HRV"]["SDNN"]), 
         RMSSD=float(bpm_and_hrv["HRV"]["RMSSD"]),
         pNN50=float(bpm_and_hrv["HRV"]["pNN50"]),
