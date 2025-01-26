@@ -135,7 +135,7 @@ def register_user(user: RegisterUser, db: db_dependency):
 def login_user(user: LoginUser, db: db_dependency):
     db_user = (
         db.query(models.User)
-        .filter((models.User.username == user.username) | (models.User.username == user.email))
+        .filter((models.User.username == user.username) | (models.User.email == user.username))
         .first()
     )
     if not db_user or not verify_password(user.password, db_user.password_hash):
