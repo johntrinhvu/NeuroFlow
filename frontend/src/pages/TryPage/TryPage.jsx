@@ -115,7 +115,7 @@ export default function TryPage() {
             </div>
             <div className="lg:mr-52 mt-6 p-2 bg-purple-50 border-violet-500 border m-4 rounded-xl">
                 <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-10" encType="multipart/form-data">
-                    <input className="flex items-center justify-center" type="file" name="file" onChange={handleFileChange} accept="video/mp4,video/mov" />
+                    <input className="flex items-center justify-center" type="file" name="file" onChange={handleFileChange} />
                     <button type="submit" className="p-2 transition ease-in-out hover:bg-purple-900 bg-purple-800 border-2 border-violet-700 text-white rounded-xl">Generate Report</button>
                 </form>
             </div>

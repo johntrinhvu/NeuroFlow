@@ -35,7 +35,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
 import math
 
-pdfmetrics.registerFont(TTFont('Times-Roman', 'times.ttf'))
+# pdfmetrics.registerFont(TTFont('Times-Roman', 'times.ttf'))
 
 
 from dotenv import load_dotenv
