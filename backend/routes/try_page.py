@@ -17,6 +17,7 @@ import numpy as np
 from scipy.signal import butter, convolve, find_peaks, filtfilt
 from fastapi import FastAPI, Query
 import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
+from openai import OpenAI
 
 from dotenv import load_dotenv
 router = APIRouter()
@@ -28,6 +29,62 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+
+# Replace with your OpenAI API key
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+def generate_chatgpt_response(prompt, max_tokens=100, temperature=0.7):
+    """
+    Generates a response from ChatGPT based on the given prompt.
+    
+    Args:
+        prompt (str): The input prompt for ChatGPT.
+        max_tokens (int): Maximum number of tokens in the response. Default is 100.
+        temperature (float): Sampling temperature for response creativity. Default is 0.7.
+        
+    Returns:
+        str: The generated response text.
+    """
+    try:
+        # Call the OpenAI API
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Use a valid model name
+            messages=[
+                {"role": "system", "content": "You are a medical professional and will read Heart rate variability data that correlates with stress."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        # Extract and return the response
+        return completion.choices[0].message['content'].strip()
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+
+def create_prompt(bpm, sdnn, rmssd, pnn50, stress_score):
+    """
+    Creates a prompt for GPT to evaluate biometric characteristics and provide recommendations.
+    
+    Args:
+        bpm (float): Beats Per Minute (BPM)
+        sdnn (float): Standard deviation of NN intervals
+        rmssd (float): Root mean square of successive differences
+        pnn50 (float): Percentage of NN50 intervals
+        stress_score (float): Stress score
+    
+    Returns:
+        str: Formatted prompt string
+    """
+    return f"""
+Evaluate the following biometric characteristics:
+- BPM: {bpm}
+- SDNN: {sdnn}
+- RMSSD: {rmssd}
+- pNN50: {pnn50}
+- Stress Score: {stress_score}
+
+Provide a brief interpretation of these values and give 1–2 actionable recommendations to improve overall well-being. Keep the response short and in a bulleted format.
+"""
 
 class NumpyEncoder(json.JSONEncoder):
     """Special JSON encoder for numpy types."""
@@ -216,6 +273,14 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
     )
     db.add(new_hr_data)
     db.commit()
+    prompt = create_prompt(
+        bpm=float(bpm_and_hrv["BPM"]),
+        sdnn=float(bpm_and_hrv["HRV"]["SDNN"]),
+        rmssd=float(bpm_and_hrv["HRV"]["RMSSD"]),
+        pnn50=float(bpm_and_hrv["HRV"]["pNN50"]),
+        stress_score=float(bpm_and_hrv["Stress_Score"][0])
+    )
+    gpt_data = generate_chatgpt_response(prompt)
 
     return {
         "message": "Video processed successfully",
@@ -226,6 +291,7 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
         "RMSSD" : float(bpm_and_hrv["HRV"]["RMSSD"]), 
         "pNN50" : float(bpm_and_hrv["HRV"]["pNN50"]),
         "stress_indicator": bpm_and_hrv["Stress_Score"],
+        "chatgpt_data" : gpt_data,
     }
 
 # Endpoint: Retrieve HR Data
