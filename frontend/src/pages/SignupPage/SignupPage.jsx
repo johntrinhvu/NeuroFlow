@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import '../AuthPage/AuthPage.css';
+import { Link } from "react-router-dom";
+import "../LoginPage/AuthPage.css";
 import SignUpForm from '../../components/SignUpForm/SignUpForm';
-import SignInForm from '../../components/SignInForm/SignInForm';
 import Logo from '../../assets/logo.png';
 
-export default function AuthPage({ setUser }) {
-  const [showSignUp, setShowSignUp] = useState(false);
-  const location = useLocation();
+export default function AuthPage() {
   
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const formType = queryParams.get('form');
-    setShowSignUp(formType === 'signup');
-  }, [location.search]);
-
   return (
     <div className="page-wrapper">
       <header className="flex justify-center items-center mt-6">
@@ -22,14 +14,10 @@ export default function AuthPage({ setUser }) {
       </header>
       <main>
         <section className="content-wrapper -mt-14">
-            { showSignUp ?
-                <SignUpForm setUser={setUser} />
-                :
-                <SignInForm setUser={setUser} />
-            }
+            <SignUpForm />
             <p className="other-page">
                 Already have an account? 
-                <span className="other-page-link" onClick={() => setShowSignUp(!showSignUp)}>{showSignUp ? 'Log In' : 'Sign Up'}</span>
+                <Link to="/login" className="other-page-link">Sign in</Link>
             </p>
         </section>
       </main>

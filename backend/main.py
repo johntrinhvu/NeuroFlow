@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File
 from routes import homepage_router, try_page_router, login_router, report_router
+from routes.login import app
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert
@@ -11,18 +12,19 @@ import uuid
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 models.Base.metadata.create_all(bind=engine)
-
-# class UserBase(BaseModel):
-#     name: str
-#     status: str
-#     avg_ppg: float
-#     heart_rate_var: float
-#     bpm: int
-
 
 def get_db():
     db = SessionLocal()

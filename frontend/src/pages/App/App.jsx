@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router"
 import Navbar from "../../components/Navbar/Navbar";
 import HomePage from "../HomePage/HomePage";
-import AuthPage from "../AuthPage/AuthPage";
+import LoginPage from "../LoginPage/LoginPage";
+import SignupPage from "../SignupPage/SignupPage";
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />}></Route>
         <Route path="/try"></Route>
-        <Route path="/authenticate" element={<AuthPage />}></Route>
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="/signup" element={<SignupPage />}></Route>
       </Routes>
     </div>
     </>
