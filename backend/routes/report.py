@@ -22,6 +22,8 @@ import numpy as np
 from scipy.signal import butter, convolve, find_peaks, filtfilt
 from fastapi import FastAPI, Query
 import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
+import matplotlib
+matplotlib.use('Agg')
 
 from hrv_data import hrv_data
 from scipy.stats import norm

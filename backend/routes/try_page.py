@@ -18,6 +18,7 @@ from scipy.signal import butter, convolve, find_peaks, filtfilt
 from fastapi import FastAPI, Query
 import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
 from openai import OpenAI
+from routes.report import generate_chatgpt_recommendation
 
 from dotenv import load_dotenv
 router = APIRouter()
@@ -294,7 +295,7 @@ def get_hr_data(user_id: str, report_id: str, token: str = Depends(oauth2_scheme
     hr_record = db.query(HRData).filter(HRData.user_id == user_id, HRData.id == report_id).first()
     if not hr_record:
         raise HTTPException(status_code=404, detail="Report not found")
-
+    
     return {
         "BPM": hr_record.BPM,
         "SDNN": hr_record.SDNN,

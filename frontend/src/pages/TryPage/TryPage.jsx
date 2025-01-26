@@ -59,7 +59,7 @@ export default function TryPage() {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row items-center lg:justify-center bg-gradient-to-r from-purple-50 to-violet-200 lg:h-screen">
+        <div className="flex flex-col items-center justify-center bg-gradient-to-r from-purple-50 to-violet-200 xl:h-screen">
             <div className="mt-32 flex flex-col items-center">
                 <div className="flex flex-col items-center w-6/12">
                     <div className="flex items-center justify-center">
@@ -69,7 +69,7 @@ export default function TryPage() {
                     <p className="flex items-center justify-center mt-2">Getting started is quick and straightforward. Follow these steps, and you'll be on your way to generating your report in no time.</p>
                 </div>
 
-                <div className="mt-6 flex flex-col items-center w-8/12">
+                <div className="mt-6 xl:mt-0 flex flex-col items-center w-8/12">
                     <div className="flex items-center justify-center">
                         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-purple-900 text-white text-3xl font-bold">2</div>
                     </div>
@@ -100,25 +100,22 @@ export default function TryPage() {
                     <h1 className="font-semibold text-2xl mt-4">Generate Your Report</h1>
                     <ol>
                         <li className="mt-2">
-                            <h5 className="font-semibold">1. Wait for Processing.</h5>
-                            <p>The system will analyze your video.</p>
+                            <p>• The system will analyze your video.</p>
                         </li>
                         <li className="mt-2">
-                            <h5 className="font-semibold">2. Preview Results.</h5>
-                            <p>You'll see a summary of key findings.</p>
+                            <p>• You'll see a summary of key findings.</p>
                         </li>
                         <li className="mt-2">
-                            <h5 className="font-semibold">3. Download the Report.</h5>
-                            <p>Click "Download Report" to download your detailed insights.</p>
+                            <p>• Click "Download Report" to download your detailed insights.</p>
                         </li>
                     </ol>
                 </div>
 
             </div>
-            <div className="lg:mr-52 mt-6 p-2 bg-slate-50 border-violet-400 border m-4 rounded-xl">
+            <div className="mt-6 mb-10 p-2 bg-violet-50 border-violet-400 border m-4 rounded-xl">
                 <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-10" encType="multipart/form-data">
                     <input className="flex items-center justify-center" type="file" name="file" onChange={handleFileChange} />
-                    <button type="submit" className="p-2 transition ease-in-out hover:bg-violet-900 bg-violet-800 border-2 border-violet-700 text-white rounded-xl">Generate Report</button>
+                    <button type="submit" className="p-2 transition ease-in-out hover:bg-purple-900 bg-purple-800 border-2 border-violet-700 text-white rounded-xl">Generate Report</button>
                 </form>
             </div>
         </div>
