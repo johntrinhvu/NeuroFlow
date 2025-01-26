@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import List, Annotated
 from datetime import datetime
 import os
+import jwt
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -14,9 +15,44 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, String, Float, JSON, ForeignKey, create_engine, DateTime
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Annotated
+from fastapi.security import OAuth2PasswordBearer
+
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+active_sessions = []
+
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1)):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# Helper for verifying tokens
+# 
+def get_current_user(token: str, db: Session):
+    try:
+        payload = jwt.decode(token, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        user = db.query(model.User).filter(model.User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="token")
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -67,15 +103,27 @@ def login_user(user: LoginUser, db: db_dependency):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if not db_user or not verify_password(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful", "user_id": db_user.id}
+    if len(active_sessions) >= 1: # MODIFY
+        raise HTTPException(status_code=403, detail="User already logged in. Please log out first.")
+    access_token = create_access_token({"user_id": db_user.id})
+    active_sessions.append(access_token) # MODIFY
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/users/profile")
-def get_profile(user_id: str, db:db_dependency):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    current_user = get_current_user(token, db)
     return {
-        "username": user.username,
-        "email": user.email,
-        "created_at": user.created_at
+        "username": current_user.username,
+        "email": current_user.email,
+        "created_at": current_user.created_at
     }
+
+@router.post("/users/logout")
+def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # current_user = get_current_user(token, db)
+
+    # Remove the user from active_sessions
+    if current_user.id in active_sessions:
+        del active_sessions[current_user.id]
+
+    return {"message": "Logged out successfully"}
