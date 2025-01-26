@@ -116,14 +116,19 @@ def register_user(user: RegisterUser, db: db_dependency):
 
 @router.post("/users/login")
 def login_user(user: LoginUser, db: db_dependency):
-    db_user = db.query(models.User).filter(models.User.username == user.username).first()
+    db_user = (
+        db.query(models.User)
+        .filter((models.User.username == user.username) | (models.User.email == user.email))
+        .first()
+    )
     if not db_user or not verify_password(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    if len(active_sessions) >= 1: # MODIFY
+    if len(active_sessions) >= 1:  # MODIFY
         raise HTTPException(status_code=403, detail="User already logged in. Please log out first.")
     access_token = create_access_token({"user_id": db_user.id})
-    active_sessions.append(access_token) # MODIFY
+    active_sessions.append(access_token)  # MODIFY
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @router.get("/users/profile")
 def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
