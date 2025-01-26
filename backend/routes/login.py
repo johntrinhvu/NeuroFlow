@@ -149,7 +149,7 @@ def login_user(user: LoginUser, db: db_dependency):
 
 @router.get("/users/profile")
 def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    current_user = get_current_user(token, db)
+    
     return {
         "username": current_user.username,
         "email": current_user.email,
@@ -157,13 +157,12 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
     }
 
 @router.post("/users/logout")
-def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    current_user = get_current_user(db)
-
-    # Remove the user from active_sessions
-    if current_user.id in active_sessions:
-        del active_sessions[current_user.id]
-
-    return {"message": "Logged out successfully"}
+def logout_user(db: Session = Depends(get_db)):
+    global active_sessions
+    if len(active_sessions) >= 1:
+        active_sessions = []
+        return {"message": "Logged out successfully"}
+    else:
+        raise HTTPException(status_code=401, detail="No Login")
 
 app.include_router(router, prefix="/users")
