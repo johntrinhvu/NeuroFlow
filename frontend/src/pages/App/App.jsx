@@ -4,6 +4,7 @@ import HomePage from "../HomePage/HomePage";
 import LoginPage from "../LoginPage/LoginPage";
 import SignupPage from "../SignupPage/SignupPage";
 import TryPage from "../TryPage/TryPage";
+import ReportPage from "../ReportPage/ReportPage";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/try" element={<TryPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
+        <Route path="/users/:userId/:postId" element={<ReportPage />}></Route>
       </Routes>
     </>
   );

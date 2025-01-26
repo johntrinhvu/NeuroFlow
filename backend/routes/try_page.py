@@ -126,7 +126,7 @@ def give_bpm_and_hrv(averaged, time_bw_fram):
         "Stress_Score": stress_score
     }
 
-def get_current_user(db: Session):
+def get_current_user(token:str, db: Session):
     try:
         payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload["user_id"]
@@ -151,8 +151,8 @@ def get_db():
 
 # Endpoint: Upload video and process HR Data
 @router.post("/hrdata/video/upload")
-def upload_video(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    current_user = get_current_user(db)
+def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    current_user = get_current_user(token, db)
 
     # Save the video to the upload directory
     file_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_{file.filename}")
@@ -219,6 +219,8 @@ def upload_video(file: UploadFile = File(...), db: Session = Depends(get_db)):
 
     return {
         "message": "Video processed successfully",
+        "user_id": current_user.id,
+        "report_id": new_hr_data.id,
         "stress_indicator": bpm_and_hrv["Stress_Score"]
     }
 
