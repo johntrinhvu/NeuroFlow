@@ -1,14 +1,59 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { FaBars, FaCaretDown } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 import Logo from "../../assets/logo.png";
 
 export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+
+    async function handleSignOut() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found");
+            return;
+        }
+    
+        try {
+            const response = await fetch("http://localhost:8000/users/logout", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to log out");
+            }
+    
+            console.log("Logout successful");
+            localStorage.removeItem("token");
+            window.location.reload(); // Optionally redirect or reload the page
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    }
+    
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log("decoded token: ", decoded);
+                setUser(decoded); // Assuming the token contains the user's info
+            } catch (error) {
+                console.error("Invalid token", error);
+                localStorage.removeItem("token"); // Remove invalid token
+            }
+        }
+    }, []);
 
     return (
         <div className="flex justify-center">
@@ -31,7 +76,12 @@ export default function Navbar() {
                         </button>
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
-                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+                                {user ? (
+                                    <button onClick={handleSignOut} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Sign Out</button>
+                                ) : (
+                                    <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+
+                                )}
                                 <Link to="/try" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                             </div>
                         )}
@@ -42,20 +92,41 @@ export default function Navbar() {
                                 Try it!
                             </button>
                         </Link>
-                        <div className="flex border rounded-lg text-slate-800 border-violet-200">
-                            <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
-                                <button>
-                                    Sign In
+                        {user ? (
+                            <div className="relative">
+                                <button
+                                    onClick={toggleDropdown}
+                                    className="flex items-center rounded-lg text-slate-800 mt-0.5 -ml-2 -mr-2"
+                                >
+                                    <FaCaretDown size={20} />
                                 </button>
-                            </Link>
-                            <span className="border border-violet-200">
-                            </span>
-                            <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
-                                <button>
-                                    Sign Up
-                                </button>
-                            </Link>
-                        </div>
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
+                                        <button
+                                            onClick={handleSignOut}
+                                            className="block w-full text-left px-4 py-2 hover:bg-slate-100 text-slate-800"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex border rounded-lg text-slate-800 border-violet-200">
+                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                    <button>
+                                        Sign In
+                                    </button>
+                                </Link>
+                                <span className="border border-violet-200">
+                                </span>
+                                <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                    <button>
+                                        Sign Up
+                                    </button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
