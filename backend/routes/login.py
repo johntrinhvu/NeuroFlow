@@ -39,14 +39,13 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Helper for verifying tokens
-def get_current_user(token: str, db: Session):
+def get_current_user(db: Session):
     try:
-        payload = jwt.decode(token, algorithms=[ALGORITHM])
-        user_id = payload.get("user_id")
+        payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload["user_id"]
         if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        user = db.query(model.User).filter(model.User.id == user_id).first()
+            raise HTTPException(status_code=401, detail=payload)
+        user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=401, detail="token")
         return user
@@ -54,6 +53,24 @@ def get_current_user(token: str, db: Session):
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    except:
+        raise HTTPException(status_code=401, detail="No Login")
+
+# # Helper for verifying tokens
+# def get_current_user(token: str, db: Session):
+#     try:
+#         payload = jwt.decode(token, algorithms=[ALGORITHM])
+#         user_id = payload.get("user_id")
+#         if not user_id:
+#             raise HTTPException(status_code=401, detail="Invalid token")
+#         user = db.query(model.User).filter(model.User.id == user_id).first()
+#         if not user:
+#             raise HTTPException(status_code=401, detail="token")
+#         return user
+#     except jwt.ExpiredSignatureError:
+#         raise HTTPException(status_code=401, detail="Token expired")
+#     except jwt.PyJWTError:
+#         raise HTTPException(status_code=401, detail="Invalid token")
 
 app = FastAPI()
 router = APIRouter()
@@ -118,7 +135,7 @@ def register_user(user: RegisterUser, db: db_dependency):
 def login_user(user: LoginUser, db: db_dependency):
     db_user = (
         db.query(models.User)
-        .filter((models.User.username == user.username) | (models.User.email == user.email))
+        .filter((models.User.username == user.username) | (models.User.username == user.email))
         .first()
     )
     if not db_user or not verify_password(user.password, db_user.password_hash):
@@ -141,7 +158,7 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
 
 @router.post("/users/logout")
 def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    # current_user = get_current_user(token, db)
+    current_user = get_current_user(db)
 
     # Remove the user from active_sessions
     if current_user.id in active_sessions:
