@@ -10,13 +10,13 @@ export default function HomePage() {
                 Try NeuroFlow for Free{' '}
                 <span className="inset-0 bg-white opacity-20 blur-md transform translate-y-1"></span>
             </h1>
-                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data in your pocket</h2>
+                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data, powered by your smartphone.</h2>
                 <button className="bg-black border border-gray-500 w-[100px] text-white rounded-md px-4 py-2">Try It!</button>
                 {/* <p className="text-gray-100 text-center pt-4 text-shadow">Your journey to better health starts here!</p> */}
             </div>
             <div>
                 <div className="h-24 flex justify-center bg-white items-center">
-                    <h1 className="text-6xl font-bold mt-16">The Facts.</h1>
+                    <h1 className="text-6xl font-bold mt-16">Here's the facts.</h1>
                 </div>
                 <div className="h-auto xl:h-[90vh] 2xl:h-[90vh]  flex flex-col xl:flex-row align-center pt-10 xl:pt-0 items-center xl:space-x-12 space-x-0 justify-center bg-white">
                     <div className="xl:w-[25vw] w-[80vw] h-[60vh] xl:h-[650px] flex flex-col items-center justify-center p-4 rounded-2xl border border-black mb-8 shadow-2xl" style={{ backgroundImage: `url(${nightBed})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
