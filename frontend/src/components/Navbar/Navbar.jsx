@@ -81,23 +81,23 @@ export default function Navbar() {
                             <FaBars size={20} />
                         </button>
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
+                            <div className="absolute right-0 mt-2 w-48 bg-violet-50 border rounded-lg shadow-lg">
+                                <Link to="/try" className="transition ease-in-out hover:bg-violet-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                                 {user ? (
                                     <>
-                                        <button onClick={navigateToProfile} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Your Profile</button>
-                                        <button onClick={handleSignOut} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Sign Out</button>
+                                        <button onClick={navigateToProfile} className="transition ease-in-out hover:bg-violet-100 block px-4 py-2 text-slate-800 w-full text-left">Your Profile</button>
+                                        <button onClick={handleSignOut} className="transition ease-in-out hover:bg-violet-100 block px-4 py-2 text-slate-800 w-full text-left">Sign Out</button>
                                     </>
                                 ) : (
-                                    <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+                                    <Link to="/login" className="transition ease-in-out hover:bg-violet-100 block px-4 py-2 text-slate-800">Sign In</Link>
 
                                 )}
-                                <Link to="/try" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                             </div>
                         )}
                     </div>
                     <div className="hidden md:flex gap-4">
                         <Link to="/try">
-                            <button className="transition ease-in-out hover:bg-purple-900 bg-purple-800 border border-violet-900 rounded-lg text-white px-4 tracking-wide py-0.5">
+                            <button className="transition ease-in-out hover:bg-slate-950 bg-slate-800 border border-gray-500 rounded-lg text-white px-4 tracking-wide py-0.5">
                                 Try it!
                             </button>
                         </Link>
@@ -107,19 +107,19 @@ export default function Navbar() {
                                     onClick={toggleDropdown}
                                     className="flex items-center rounded-lg text-slate-800 mt-0.5 -ml-2 -mr-2"
                                 >
-                                    <FaUserCircle size={24} />
+                                    <FaUserCircle className="transition ease-in-out hover:text-violet-900 text-violet-800" size={24} />
                                 </button>
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
+                                    <div className="absolute right-0 mt-2 w-48 bg-violet-50 border rounded-lg shadow-lg">
                                         <button
                                             onClick={navigateToProfile}
-                                            className="block w-full text-left px-4 py-2 hover:bg-slate-100 text-slate-800"
+                                            className="block w-full text-left px-4 py-2 hover:bg-violet-100 text-slate-800"
                                         >
                                             Your Profile
                                         </button>
                                         <button
                                             onClick={handleSignOut}
-                                            className="block w-full text-left px-4 py-2 hover:bg-slate-100 text-slate-800"
+                                            className="block w-full text-left px-4 py-2 hover:bg-violet-100 text-slate-800"
                                         >
                                             Sign Out
                                         </button>
@@ -128,14 +128,14 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="flex border rounded-lg text-slate-800 border-violet-200">
-                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                <Link to="/login" className="transition ease-in-out hover:bg-violet-200 px-4 py-0.5">
                                     <button>
                                         Sign In
                                     </button>
                                 </Link>
                                 <span className="border border-violet-200">
                                 </span>
-                                <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                <Link to="/signup" className="transition ease-in-out hover:bg-violet-200 px-4 py-0.5">
                                     <button>
                                         Sign Up
                                     </button>

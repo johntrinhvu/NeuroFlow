@@ -305,12 +305,10 @@ def get_hr_data(user_id: str, report_id: str, token: str = Depends(oauth2_scheme
 
 @router.get("/hrdata/data/{user_id}")
 def get_all_hr_data(user_id: str, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    # Validate the token and ensure the user matches
-    current_user = get_current_user(token, db)
-    if current_user.id != user_id:
+    curr_user = get_current_user(token, db)
+    if curr_user.id != user_id:
         raise HTTPException(status_code=403, detail="Unauthorized access")
 
-    # Fetch all HR data for the user
     hr_records = db.query(HRData).filter(HRData.user_id == user_id).all()
     return {"hr_data": [hr.to_dict() for hr in hr_records]}
 
