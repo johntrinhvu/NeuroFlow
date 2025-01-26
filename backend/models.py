@@ -21,3 +21,15 @@ class HRData(Base):
     RMSSD = Column(Float, nullable=False)
     pNN50 = Column(Float, nullable=False)
     Stress_Score = Column(Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "uploaded_at": self.uploaded_at.isoformat(),  # Convert datetime to ISO format for JSON serialization
+            "BPM": self.BPM,
+            "SDNN": self.SDNN,
+            "RMSSD": self.RMSSD,
+            "pNN50": self.pNN50,
+            "Stress_Score": self.Stress_Score,
+        }
