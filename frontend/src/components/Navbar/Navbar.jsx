@@ -1,16 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { FaBars, FaCaretDown } from "react-icons/fa";
+import { useState, useContext } from "react";
+import { UserContext } from "../../contexts/UserContext/UserContext";
+import { FaBars, FaUserCircle } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import Logo from "../../assets/logo.png";
 
 export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [user, setUser] = useState(null);
+    const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+        setIsDropdownOpen((prevState) => !prevState);
     };
 
     async function handleSignOut() {
@@ -34,26 +35,31 @@ export default function Navbar() {
     
             console.log("Logout successful");
             localStorage.removeItem("token");
-            window.location.reload(); // Optionally redirect or reload the page
+            setUser(null);
+            setIsDropdownOpen(false);
+            navigate("/");
         } catch (error) {
             console.error("Logout error:", error);
         }
     }
     
+    // const handleLogin = () => {
+    //     const token = localStorage.getItem("token");
+    //     if (token) {
+    //         try {
+    //             const decoded = jwtDecode(token);
+    //             setUser(decoded); 
+    //         } catch (error) {
+    //             console.error("Invalid token", error);
+    //         }
+    //     }
+    // }
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                console.log("decoded token: ", decoded);
-                setUser(decoded); // Assuming the token contains the user's info
-            } catch (error) {
-                console.error("Invalid token", error);
-                localStorage.removeItem("token"); // Remove invalid token
-            }
+    const navigateToProfile = () => {
+        if (user?.user_id) {
+            navigate(`/users/${user.user_id}`);
         }
-    }, []);
+    }
 
     return (
         <div className="z-40 flex justify-center">
@@ -77,7 +83,10 @@ export default function Navbar() {
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
                                 {user ? (
-                                    <button onClick={handleSignOut} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Sign Out</button>
+                                    <>
+                                        <button onClick={navigateToProfile} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Your Profile</button>
+                                        <button onClick={handleSignOut} className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800 w-full text-left">Sign Out</button>
+                                    </>
                                 ) : (
                                     <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
 
@@ -98,10 +107,16 @@ export default function Navbar() {
                                     onClick={toggleDropdown}
                                     className="flex items-center rounded-lg text-slate-800 mt-0.5 -ml-2 -mr-2"
                                 >
-                                    <FaCaretDown size={20} />
+                                    <FaUserCircle size={24} />
                                 </button>
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
+                                        <button
+                                            onClick={navigateToProfile}
+                                            className="block w-full text-left px-4 py-2 hover:bg-slate-100 text-slate-800"
+                                        >
+                                            Your Profile
+                                        </button>
                                         <button
                                             onClick={handleSignOut}
                                             className="block w-full text-left px-4 py-2 hover:bg-slate-100 text-slate-800"
