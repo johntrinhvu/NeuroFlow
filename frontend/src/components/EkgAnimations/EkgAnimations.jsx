@@ -5,8 +5,8 @@ const EkgSvg = () => {
   return (
     <svg viewBox="0 0 500 100" width="100%" height="100" style={{ background: "tra" }}>
       <motion.polyline
-        points="0,50 50,50 70,20 90,80 110,50 160, 50 180, 20 200, 80 220, 50 300, 50 "
-
+        points="100,50 150,50 170,20 190,80 210,50 260, 50 280, 10 300, 90 320, 50 400, 50 "
+        
         fill="none"
         stroke="white"
         strokeWidth="3"

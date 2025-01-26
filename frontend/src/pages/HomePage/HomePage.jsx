@@ -17,7 +17,8 @@ export default function HomePage() {
                     <button className="transition ease-in-out hover:bg-slate-950 bg-slate-800 border border-gray-500 text-white rounded-md px-4 py-2">Try NeuroFlow</button>
                 </Link>
                 {/* <p className="text-gray-100 text-center pt-4 text-shadow">Your journey to better health starts here!</p> */}
-                <div className=" w-full mt-5 pl-44">
+                {/* w-full mt-5 pl-44 */}
+                <div className=" mt-5">
                     <EkgSvg/>
                 </div>
                 
