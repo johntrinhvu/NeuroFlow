@@ -27,17 +27,29 @@ def calculate_percentile(sex, measurement_type, measurement):
     percentile = norm.cdf(z_score) * 100
     print(percentile)
     return round(percentile, 2)
-# Accepts a list of model objects whose attributes can be accessed with "."
-# Example percentile data for SDNN, RMSSD, BPM, and Stress Score
-percentiles = {
-    "SDNN": 70,  # 70th percentile
-    "RMSSD": 85,  # 85th percentile
-    "pNN50": 50,
-    "BPM": 40,    # 40th percentile
-    "Stress Score": 30  # 30th percentile
-}
 
-test_result = {"sdnn": 50, "rmssd": 51, "pnn50": 100, "bpm": 89, "stress_score": 69}
+# Accepts a list of HRData objects whose attributes can be accessed with "."
+
+list_of_hdr = []
+if len(list_of_hdr) > 0:
+    most_recent_hdr = list_of_hdr[-1]
+
+date_to_stress_score = {} # To be plot. Date should be in date/hours/mins
+for hdr in list_of_hdr:
+    # Looks like this: "2025-01-26T01:13:28.660651"
+    # Assuming timestamp is a datetime object. May need to change.
+    timestamp = hdr.uploaded_at
+    formatted_datetime = str(timestamp.strftime("%Y-%m-%d %H:%M"))
+
+    date_to_stress_score[formatted_datetime] = hdr.Stress_Score
+
+test_result = {
+    "sdnn": 50, 
+    "rmssd": 51, 
+    "pnn50": 100, 
+    "bpm": 89, 
+    "stress_score": 69
+}
 
 def generate_stress_report(
     full_name,
