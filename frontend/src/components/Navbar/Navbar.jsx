@@ -1,14 +1,29 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 import Logo from "../../assets/logo.png";
 
 export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [user, setUser] = useState(null);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUser(decoded); // Assuming the token contains the user's info
+            } catch (error) {
+                console.error("Invalid token", error);
+                localStorage.removeItem("token"); // Remove invalid token
+            }
+        }
+    }, []);
 
     return (
         <div className="flex justify-center">
@@ -31,7 +46,12 @@ export default function Navbar() {
                         </button>
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
-                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+                                {user ? (
+                                    <span className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Hi, {user.name}</span>
+                                ) : (
+                                    <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+
+                                )}
                                 <Link to="/try" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                             </div>
                         )}
@@ -42,20 +62,26 @@ export default function Navbar() {
                                 Try it!
                             </button>
                         </Link>
-                        <div className="flex border rounded-lg text-slate-800 border-violet-200">
-                            <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
-                                <button>
-                                    Sign In
-                                </button>
-                            </Link>
-                            <span className="border border-violet-200">
-                            </span>
-                            <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
-                                <button>
-                                    Sign Up
-                                </button>
-                            </Link>
-                        </div>
+                        {user ? (
+                            <div>
+                                Hi, {user.name}
+                            </div>
+                        ) : (
+                            <div className="flex border rounded-lg text-slate-800 border-violet-200">
+                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                    <button>
+                                        Sign In
+                                    </button>
+                                </Link>
+                                <span className="border border-violet-200">
+                                </span>
+                                <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                                    <button>
+                                        Sign Up
+                                    </button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
