@@ -10,8 +10,8 @@ export default function HomePage() {
                 Try NeuroFlow for Free{' '}
                 <span className="inset-0 bg-white opacity-20 blur-md transform translate-y-1"></span>
             </h1>
-                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data, powered by your smartphone.</h2>
-                <button className="bg-black border border-gray-500 w-[100px] text-white rounded-md px-4 py-2">Try It!</button>
+                <h2 className="text-gray-100 text-center pt-4 pb-5 text-4xl max-w-[450px] text-shadow">Convenient HRV data in your pocket</h2>
+                <button className="transition ease-in-out hover:bg-slate-950 bg-slate-800 border border-gray-500 text-white rounded-md px-4 py-2">Try NeuroFlow</button>
                 {/* <p className="text-gray-100 text-center pt-4 text-shadow">Your journey to better health starts here!</p> */}
             </div>
             <div>

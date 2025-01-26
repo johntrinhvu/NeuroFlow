@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../contexts/UserContext/UserContext";
 import './SignInForm.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function SignInForm() {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -34,6 +37,9 @@ export default function SignInForm() {
 
       const data = await response.json();
       localStorage.setItem('token', data.access_token)
+
+      const decodedUser = jwtDecode(data.access_token);
+      setUser(decodedUser);
       navigate('/');
 
     } catch (err) {
