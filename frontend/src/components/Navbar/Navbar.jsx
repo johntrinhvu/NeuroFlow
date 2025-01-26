@@ -31,7 +31,7 @@ export default function Navbar() {
                         </button>
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-slate-50 border rounded-lg shadow-lg">
-                                <Link to="/authenticate" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
+                                <Link to="/login" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Sign In</Link>
                                 <Link to="/try" className="transition ease-in-out hover:bg-slate-100 block px-4 py-2 text-slate-800">Try NeuroFlow</Link>
                             </div>
                         )}
@@ -43,14 +43,14 @@ export default function Navbar() {
                             </button>
                         </Link>
                         <div className="flex border rounded-lg text-slate-800 border-violet-200">
-                            <Link to="/authenticate?form=signin" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                            <Link to="/login" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
                                 <button>
                                     Sign In
                                 </button>
                             </Link>
                             <span className="border border-violet-200">
                             </span>
-                            <Link to="/authenticate?form=signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
+                            <Link to="/signup" className="transition ease-in-out hover:bg-slate-100 px-4 py-0.5">
                                 <button>
                                     Sign Up
                                 </button>

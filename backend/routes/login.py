@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -31,6 +32,7 @@ ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 active_sessions = []
 
+
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1)):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
@@ -38,7 +40,6 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # Helper for verifying tokens
-# 
 def get_current_user(token: str, db: Session):
     try:
         payload = jwt.decode(token, algorithms=[ALGORITHM])
@@ -54,7 +55,18 @@ def get_current_user(token: str, db: Session):
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+app = FastAPI()
 router = APIRouter()
+
+# enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Replace with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class RegisterUser(BaseModel):
@@ -82,6 +94,10 @@ def get_password_hash(password):
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+@router.options("/users/login")
+def options_login():
+    return {"allow": "POST, OPTIONS"}
 
 @router.post("/users/register")
 def register_user(user: RegisterUser, db: db_dependency):
@@ -127,3 +143,5 @@ def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
         del active_sessions[current_user.id]
 
     return {"message": "Logged out successfully"}
+
+app.include_router(router, prefix="/users")
