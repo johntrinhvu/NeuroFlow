@@ -45,6 +45,39 @@ export default function ProfilePage() {
         fetchReports();
     }, [userId]);
 
+    const handleDownloadPDF = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("You must be logged in to download the report.");
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8000/hrdata/download`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to download the report.");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "stress_report.pdf";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Error downloading report:", err);
+            setError(err.message);
+        }
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -62,7 +95,7 @@ export default function ProfilePage() {
                 ) : (
                     <div className="mt-4 w-9/12 max-w-[1070px]">
                         <div className="flex justify-center">
-                            <button className="transition ease-in-out hover:bg-violet-900 bg-violet-800 text-white px-4 py-2 rounded-xl">Download PDF Version of Report</button>
+                            <button onClick={handleDownloadPDF} className="transition ease-in-out hover:bg-violet-900 bg-violet-800 text-white px-4 py-2 rounded-xl">Download PDF Version of Report</button>
                         </div>
                         <div className="mt-4">
                             <ul>
