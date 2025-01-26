@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File
-from routes import homepage_router, try_page_router, login_router
+from routes import homepage_router, try_page_router, login_router, report_router
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert
@@ -11,6 +11,7 @@ import uuid
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
+
 
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
@@ -50,3 +51,4 @@ db_dependency = Annotated[AsyncSession, Depends(get_db)]
 app.include_router(homepage_router)
 app.include_router(try_page_router)
 app.include_router(login_router)
+app.include_router(report_router)
