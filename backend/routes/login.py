@@ -37,6 +37,8 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
+
+    print(f"Token payload: {to_encode}")
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_current_user(db: Session):
@@ -92,7 +94,7 @@ class RegisterUser(BaseModel):
     password: str
 
 class LoginUser(BaseModel):
-    username: str
+    email: EmailStr
     password: str
 
         
@@ -135,14 +137,16 @@ def register_user(user: RegisterUser, db: db_dependency):
 def login_user(user: LoginUser, db: db_dependency):
     db_user = (
         db.query(models.User)
-        .filter((models.User.username == user.username) | (models.User.email == user.username))
+        .filter(models.User.email == user.email)
         .first()
     )
     if not db_user or not verify_password(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    print(f"db_user: {db_user}")
     if len(active_sessions) >= 1:  # MODIFY
         raise HTTPException(status_code=403, detail="User already logged in. Please log out first.")
-    access_token = create_access_token({"user_id": db_user.id})
+    access_token = create_access_token({"user_id": db_user.id, "name": db_user.username})
     active_sessions.append(access_token)  # MODIFY
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -158,12 +162,24 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
 
 @router.post("/users/logout")
 def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    current_user = get_current_user(db)
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # Remove the user session from active_sessions
+        global active_sessions
+        active_sessions = [
+            session for session in active_sessions if session.get("user_id") != user_id
+        ]
 
-    # Remove the user from active_sessions
-    if current_user.id in active_sessions:
-        del active_sessions[current_user.id]
+        return {"message": "Logged out successfully"}
+    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
-    return {"message": "Logged out successfully"}
 
 app.include_router(router, prefix="/users")

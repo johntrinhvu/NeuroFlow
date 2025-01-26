@@ -5,7 +5,7 @@ import './SignInForm.css';
 export default function SignInForm() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -48,7 +48,7 @@ export default function SignInForm() {
       </div>
       <div className="login-container">
         <form autoComplete="off" onSubmit={handleSubmit} className="input-wrapper">
-          <input type="text" placeholder="Username" className="login-input-box" name="username" value={credentials.username} onChange={handleChange} required />
+          <input type="email" placeholder="Email Address" className="login-input-box" name="email" value={credentials.email} onChange={handleChange} required />
           <input type="password" placeholder="Password" className="login-input-box" name="password" value={credentials.password} onChange={handleChange} required />
           <button type="submit" className="continue-btn">Continue</button>
         </form>
