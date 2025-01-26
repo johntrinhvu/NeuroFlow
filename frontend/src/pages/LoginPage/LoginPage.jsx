@@ -6,8 +6,8 @@ import Logo from '../../assets/logo.png';
 
 export default function AuthPage() {
   return (
-    <div className="mt-24 page-wrapper">
-      <header className="flex justify-center items-center mt-6">
+    <div className="page-wrapper bg-gradient-to-r from-purple-50 to-violet-200 h-screen">
+      <header className="flex justify-center items-center mt-24">
         <img src={ Logo } alt="NeuroFlowLogo" className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48" />
       </header>
       <main>

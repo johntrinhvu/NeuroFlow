@@ -48,9 +48,9 @@ export default function ReportPage() {
 
   return (
     <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-200 h-screen">
-        <div className="mt-24 flex flex-col">
-            <h1 className="text-2xl sm:text-3xl font-bold flex justify-center">Generated Report Details</h1>
-            <div className="mt-4 flex justify-center space-x-8 items-center ">
+        <div className="mt-24 flex flex-col items-center">
+            <h1 className="text-2xl sm:text-3xl font-bold flex justify-center items-center">Generated Report Details</h1>
+            <div className="mt-4 p-0.5 sm:p-4 flex justify-center space-x-4 items-center bg-slate-50 border rounded-xl border-violet-400">
                 <div className="text-right text-xl">
                     <h3><strong>BPM: </strong></h3>
                     <h3><strong>SDNN: </strong></h3>

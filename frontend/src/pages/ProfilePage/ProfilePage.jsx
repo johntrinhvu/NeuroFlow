@@ -54,27 +54,39 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-4 bg-purple-200">
-            <h1 className="text-2xl font-bold">Your Reports</h1>
-            {reports.length === 0 ? (
-                <p>No reports found.</p>
-            ) : (
-                <ul className="mt-4">
-                    {reports.map((report) => (
-                    <li key={report.id} className="mt-2">
-                        <Link
-                            to={`/users/${report.user_id}/${report.id}`}
-                            className="text-blue-600 underline hover:text-blue-800"
-                        >
-                            Report ID: {report.id}
-                        </Link>
-                        <p className="text-sm text-gray-600">
-                            Uploaded At: {new Date(report.uploaded_at).toLocaleString()}
-                        </p>
-                    </li>
-                ))}
-                </ul>
-            )}
+        <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-200 h-screen">
+            <div className="mt-24 flex flex-col items-center">
+                <h1 className="text-2xl font-bold">Your Reports</h1>
+                {reports.length === 0 ? (
+                    <p>No reports found.</p>
+                ) : (
+                    <div className="mt-4 w-9/12 max-w-[1070px]">
+                        <div className="flex justify-center">
+                            <button className="transition ease-in-out hover:bg-violet-900 bg-violet-800 text-white px-4 py-2 rounded-xl">Download PDF Version of Report</button>
+                        </div>
+                        <div className="mt-4">
+                            <ul>
+                                {reports.map((report) => (
+                                <Link
+                                    to={`/users/${report.user_id}/${report.id}`}
+                                >
+                                    <li key={report.id} className="transition ease-in-out hover:bg-slate-200 mt-2 border border-violet-400 bg-slate-50 rounded-xl p-4 flex flex-col">
+                                        <div className="flex space-x-2">
+                                            <h1 className="font-semibold">Report ID: </h1>
+                                            <p>{report.id.slice(0, 10)}{report.id.length > 10 ? '...' : ''}</p>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Uploaded At: {new Date(report.uploaded_at).toLocaleString("en-US", { timeZone: "America/Los_Angeles" })}
+                                        </p>
+                                    </li>
+                                </Link>
+                                
+                            ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

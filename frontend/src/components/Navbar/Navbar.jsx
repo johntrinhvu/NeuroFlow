@@ -63,7 +63,7 @@ export default function Navbar() {
 
     return (
         <div className="z-40 flex justify-center">
-            <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between border-violet-400 bg-violet-100 border">
+            <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between border-violet-400 bg-slate-50 border">
                 <Link to="/" className="">
                     <div className="flex gap-0.5 items-center">
                         <span className="">
