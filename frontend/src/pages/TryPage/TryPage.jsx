@@ -8,7 +8,7 @@ export default function TryPage() {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row items-center lg:justify-center bg-gradient-to-r from-purple-200 to-violet-300 lg:h-screen">
+        <div className="flex flex-col lg:flex-row items-center lg:justify-center bg-gradient-to-r from-purple-50 to-violet-200 lg:h-screen">
             <div className="mt-32 flex flex-col items-center">
                 <div className="flex flex-col items-center w-6/12">
                     <div className="flex items-center justify-center">
