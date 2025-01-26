@@ -44,11 +44,11 @@ for hdr in list_of_hdr:
     date_to_stress_score[formatted_datetime] = hdr.Stress_Score
 
 test_result = {
-    "sdnn": 50, 
-    "rmssd": 51, 
-    "pnn50": 100, 
-    "bpm": 89, 
-    "stress_score": 69
+    "sdnn": most_recent_hdr.SDNN, 
+    "rmssd": most_recent_hdr.RMSSD, 
+    "pnn50": most_recent_hdr.pNN50, 
+    "bpm": most_recent_hdr.BPM, 
+    "stress_score": most_recent_hdr.Stress_Score
 }
 
 def generate_stress_report(
