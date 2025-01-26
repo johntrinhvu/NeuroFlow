@@ -219,6 +219,8 @@ def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_schem
 
     return {
         "message": "Video processed successfully",
+        "user_id": current_user.id,
+        "report_id": new_hr_data.id,
         "stress_indicator": bpm_and_hrv["Stress_Score"]
     }
 
