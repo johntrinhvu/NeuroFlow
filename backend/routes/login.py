@@ -161,25 +161,14 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
     }
 
 @router.post("/users/logout")
-def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("user_id")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        # Remove the user session from active_sessions
-        global active_sessions
-        active_sessions = [
-            session for session in active_sessions if session.get("user_id") != user_id
-        ]
+def logout_user(db: Session = Depends(get_db)):
+    global active_sessions
 
+    if len(active_sessions) >= 1:
+        active_sessions = []
         return {"message": "Logged out successfully"}
-    
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    else:
+        raise HTTPException(status_code=401, detail="No Login")
 
 
 app.include_router(router, prefix="/users")
