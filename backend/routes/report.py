@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, APIRouter
 from fastapi.responses import FileResponse
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 from models import HRData
 import os
@@ -34,6 +35,12 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
 import math
+from reportlab.platypus import Image
+from openai import OpenAI
+
+import matplotlib.pyplot as plt
+
+
 
 # pdfmetrics.registerFont(TTFont('Times-Roman', 'times.ttf'))
 
@@ -48,6 +55,66 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+
+# Replace with your OpenAI API key
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+def format_data_for_prompt(data):
+    formatted_data = "You are a medical professional and will read Heart rate variability data that correlates with stress. Here are the patient's HRV metrics:\n\n"
+    formatted_data += f"{data[0][0]:<10} | {data[0][1]:<10} | {data[0][2]:<10} | {data[0][3]:<10}\n"
+    formatted_data += "-" * 50 + "\n"
+    for row in data[1:]:
+        formatted_data += f"{row[0]:<10} | {row[1]:<10} | {row[2]:<10} | {row[3]:<10}\n"
+    return formatted_data
+
+def generate_chatgpt_recommendation(data):
+    client = OpenAI(
+        api_key=OPENAI_KEY,  # This is the default and can be omitted
+    )
+    formatted_data = format_data_for_prompt(data)
+    prompt = (
+        f"{formatted_data}\n\n"
+        "Based on these results, provide a brief interpretation of the metrics and recommend 1–2 actionable steps the patient should take to improve their overall well-being. Do it in a simple text format so no formating with headers or subheaders or anything like that, just plain text."
+    )
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="gpt-4o",
+    )
+    return chat_completion.choices[0].message.content
+
+def create_stress_score_plot(date_to_stress_score):
+    """
+    Generate a line plot for stress scores over time.
+    Args:
+        date_to_stress_score (dict): Dictionary of date-time to stress score.
+
+    Returns:
+        bytes: The graph as an image in bytes.
+    """
+    # Extract dates and stress scores
+    dates = list(date_to_stress_score.keys())
+    scores = list(date_to_stress_score.values())
+    
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(dates, scores, marker="o", linestyle="-")
+    plt.title("Stress Score Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Stress Score")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    
+    # Save the plot to a BytesIO buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="png")
+    plt.close()
+    buffer.seek(0)
+    return buffer
+
 
 def calculate_percentile(sex, measurement_type, measurement):
     # sex = "male" or "female"
@@ -69,7 +136,8 @@ def generate_stress_report(
     sex,
     test_result, # 
     overall_stress_score,
-    clinical_recommendations
+    clinical_recommendations,
+    stress_score_plot
 ):
     """
     Generate a stress report PDF document
@@ -192,6 +260,16 @@ def generate_stress_report(
     content.append(Paragraph("Clinical Recommendations:", heading_style))
     content.append(Paragraph(clinical_recommendations, normal_style))
     
+    recommendation = generate_chatgpt_recommendation(data)
+    # Add ChatGPT Recommendations
+    content.append(Paragraph("Additional AI-Based Recommendations:", heading_style))
+    content.append(Paragraph(recommendation, normal_style))
+ 
+    # Add Graph
+    if stress_score_plot:
+        image = Image(stress_score_plot, width=400, height=300)  # Adjust width and height as needed
+        content.append(image)
+    
     # Build PDF
     doc.build(content)
     
@@ -232,38 +310,36 @@ def download_hr_data(db: Session = Depends(get_db)):
     if not user_hr_data:
         raise HTTPException(status_code=404, detail="No HR data found for the user")
 
-    # Accepts a list of HRData objects whose attributes can be accessed with "."
-    most_recent_hdr = None
-    if len(user_hr_data) > 0:
-        most_recent_hdr = user_hr_data[-1]
-    if not most_recent_hdr:
-        raise HTTPException(status_code=404, detail="No HR data found for the user") 
-    
-    date_to_stress_score = {} # To be plot. Date should be in date/hours/mins
+    # Prepare data for the graph
+    date_to_stress_score = {}
     for hdr in user_hr_data:
-        # Looks like this: "2025-01-26T01:13:28.660651"
-        # Assuming timestamp is a datetime object. May need to change.
         timestamp = hdr.uploaded_at
         formatted_datetime = str(timestamp.strftime("%Y-%m-%d %H:%M"))
-
         date_to_stress_score[formatted_datetime] = hdr.Stress_Score
 
+    # Generate the graph
+    stress_score_plot = create_stress_score_plot(date_to_stress_score)
+
+    # Prepare the most recent test result
+    most_recent_hdr = user_hr_data[-1]
     test_result = {
-        "sdnn": most_recent_hdr.SDNN, 
-        "rmssd": most_recent_hdr.RMSSD, 
-        "pnn50": most_recent_hdr.pNN50, 
-        "bpm": most_recent_hdr.BPM, 
-        "stress_score": most_recent_hdr.Stress_Score
+        "sdnn": most_recent_hdr.SDNN,
+        "rmssd": most_recent_hdr.RMSSD,
+        "pnn50": most_recent_hdr.pNN50,
+        "bpm": most_recent_hdr.BPM,
+        "stress_score": most_recent_hdr.Stress_Score,
     }
 
+    # Generate the PDF
     pdf_content = generate_stress_report(
-        full_name='Dylan Tran',
+        full_name="Dylan Tran",
         sex="male",
         test_result=test_result,
         overall_stress_score=65,
-        clinical_recommendations="Recommend stress management techniques and follow-up consultation."
+        clinical_recommendations="Recommend stress management techniques and follow-up consultation.",
+        stress_score_plot=stress_score_plot,
     )
-    
+
     # Write the PDF file
     file_path = "stress_report.pdf"
     with open(file_path, "wb") as f:

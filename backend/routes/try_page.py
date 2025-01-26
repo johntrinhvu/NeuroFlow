@@ -33,32 +33,20 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 # Replace with your OpenAI API key
 OPENAI_KEY = os.getenv("OPENAI_KEY")
 def generate_chatgpt_response(prompt, max_tokens=100, temperature=0.7):
-    """
-    Generates a response from ChatGPT based on the given prompt.
+    client = OpenAI(
+        api_key=OPENAI_KEY,  # This is the default and can be omitted
+    )
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="gpt-4o",
+    )
+    return chat_completion.choices[0].message.content
     
-    Args:
-        prompt (str): The input prompt for ChatGPT.
-        max_tokens (int): Maximum number of tokens in the response. Default is 100.
-        temperature (float): Sampling temperature for response creativity. Default is 0.7.
-        
-    Returns:
-        str: The generated response text.
-    """
-    try:
-        # Call the OpenAI API
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Use a valid model name
-            messages=[
-                {"role": "system", "content": "You are a medical professional and will read Heart rate variability data that correlates with stress."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=max_tokens,
-            temperature=temperature
-        )
-        # Extract and return the response
-        return completion.choices[0].message['content'].strip()
-    except Exception as e:
-        return f"Error: {str(e)}"
 
 
 def create_prompt(bpm, sdnn, rmssd, pnn50, stress_score):
