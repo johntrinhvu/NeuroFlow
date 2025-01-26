@@ -25,6 +25,7 @@ import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
 
 from dotenv import load_dotenv
 router = APIRouter()
+app = FastAPI()
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 load_dotenv()
@@ -91,4 +92,10 @@ def download_hr_data(db: Session = Depends(get_db)):
 
     # Return the PDF as a response
     # return FileResponse(pdf_path, media_type="application/pdf", filename=f"{current_user.username}_hr_data.pdf")
+    for i in user_hr_data:
+        print(i.user_id)
+        # print(type(user_hr_data))
     return user_hr_data
+
+    
+app.include_router(router, prefix="/hrdata")

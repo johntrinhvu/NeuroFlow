@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File
 from routes import homepage_router, try_page_router, login_router, report_router
 from routes.login import app
+from routes.try_page import app
+from routes.report import app
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert

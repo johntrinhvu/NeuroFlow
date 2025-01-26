@@ -20,6 +20,7 @@ import neurokit2 as nk  # Import NeuroKit2 for stress score calculation
 
 from dotenv import load_dotenv
 router = APIRouter()
+app = FastAPI()
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 load_dotenv()
@@ -227,3 +228,6 @@ def get_hr_data(user_id: str = Depends(get_db), db: Session = Depends(get_db)):
     result = db.execute(select(HRData).filter(HRData.user_id == user_id))
     hr_records = result.scalars().all()
     return {"hr_data": hr_records}
+
+
+app.include_router(router, prefix="/hrdata")
