@@ -126,7 +126,7 @@ def give_bpm_and_hrv(averaged, time_bw_fram):
         "Stress_Score": stress_score
     }
 
-def get_current_user(db: Session):
+def get_current_user(token:str, db: Session):
     try:
         payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload["user_id"]
