@@ -153,7 +153,6 @@ def login_user(user: LoginUser, db: db_dependency):
 
 @router.get("/users/profile")
 def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    
     return {
         "username": current_user.username,
         "email": current_user.email,
