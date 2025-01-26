@@ -151,8 +151,8 @@ def get_db():
 
 # Endpoint: Upload video and process HR Data
 @router.post("/hrdata/video/upload")
-def upload_video(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    current_user = get_current_user(db)
+def upload_video(file: UploadFile = File(...), token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    current_user = get_current_user(token, db)
 
     # Save the video to the upload directory
     file_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_{file.filename}")

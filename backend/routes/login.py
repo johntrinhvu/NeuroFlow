@@ -41,31 +41,13 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1
     print(f"Token payload: {to_encode}")
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_current_user(db: Session):
-    try:
-        payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload["user_id"]
-        if not user_id:
-            raise HTTPException(status_code=401, detail=payload)
-        user = db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=401, detail="token")
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    except:
-        raise HTTPException(status_code=401, detail="No Login")
-
-# # Helper for verifying tokens
-# def get_current_user(token: str, db: Session):
+# def get_current_user(db: Session):
 #     try:
-#         payload = jwt.decode(token, algorithms=[ALGORITHM])
-#         user_id = payload.get("user_id")
+#         payload = jwt.decode(active_sessions[0], SECRET_KEY, algorithms=[ALGORITHM])
+#         user_id = payload["user_id"]
 #         if not user_id:
-#             raise HTTPException(status_code=401, detail="Invalid token")
-#         user = db.query(model.User).filter(model.User.id == user_id).first()
+#             raise HTTPException(status_code=401, detail=payload)
+#         user = db.query(User).filter(User.id == user_id).first()
 #         if not user:
 #             raise HTTPException(status_code=401, detail="token")
 #         return user
@@ -73,6 +55,24 @@ def get_current_user(db: Session):
 #         raise HTTPException(status_code=401, detail="Token expired")
 #     except jwt.PyJWTError:
 #         raise HTTPException(status_code=401, detail="Invalid token")
+#     except:
+#         raise HTTPException(status_code=401, detail="No Login")
+
+# Helper for verifying tokens
+def get_current_user(token: str, db: Session):
+    try:
+        payload = jwt.decode(token, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        user = db.query(model.User).filter(model.User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="token")
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 app = FastAPI()
 router = APIRouter()
@@ -162,11 +162,15 @@ def get_profile(token: str = Depends(oauth2_scheme), db: Session = Depends(get_d
 
 @router.post("/users/logout")
 def logout_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    db_user = get_current_user(token, db)
+    access_token = create_access_token({"user_id": db_user.id, "name": db_user.username})
     global active_sessions
 
-    if len(active_sessions) >= 1:
-        active_sessions = []
-        return {"message": "Logged out successfully"}
+    # if len(active_sessions) >= 1:
+    #     active_sessions = []
+    #     return {"message": "Logged out successfully"}
+    if access_token in active_sessions:
+        del active_sessions[current_user.id]
     else:
         raise HTTPException(status_code=401, detail="No Login")
 
